@@ -315,7 +315,7 @@ app.post("/login", async (req, res) => {
 
     if (existingUser.password === password) {
       // If the passwords match, you can proceed with further actions like generating a token
-      const token = jwt.sign(
+      const token = await jwt.sign(
         {
           id: existingUser.id,
         },
