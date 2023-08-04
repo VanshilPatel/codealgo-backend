@@ -277,7 +277,7 @@ app.get("/submissions/:problemId", auth, (req, res) => {
 // });
 app.post("/submission", auth, async (req, res) => {
   const problemId = req.body.problemId;
-  const isCorrect = Math.random() < 0.5; // Randomly determine the correctness of the submission (for testing purposes)
+  const isCorrect = req.body.isCorrect; // Randomly determine the correctness of the submission (for testing purposes)
 
   try {
     const problem = await Problem.findOne({ id: problemId });
