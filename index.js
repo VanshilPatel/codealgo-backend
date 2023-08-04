@@ -250,29 +250,63 @@ app.get("/submissions/:problemId", auth, (req, res) => {
   });
 });
 
-app.post("/submission", auth, (req, res) => {
-  const isCorrect = Math.random() < 0.5;
-  const id = req.body.id;
+// app.post("/submission", auth, (req, res) => {
+//   const isCorrect = Math.random() < 0.5;
+//   const id = req.body.id;
 
-  if (isCorrect) {
-    SUBMISSIONS.push({
-      //find user based on email .
-      id,
-      userId: req.userId,
-      status: "AC",
-    });
-    return res.json({
-      status: "AC",
-    });
-  } else {
-    SUBMISSIONS.push({
-      id,
-      userId: req.userId,
-      status: "WA",
-    });
-    return res.json({
-      status: "WA",
-    });
+//   if (isCorrect) {
+//     SUBMISSIONS.push({
+//       //find user based on email .
+//       id,
+//       userId: req.userId,
+//       status: "AC",
+//     });
+//     return res.json({
+//       status: "AC",
+//     });
+//   } else {
+//     SUBMISSIONS.push({
+//       id,
+//       userId: req.userId,
+//       status: "WA",
+//     });
+//     return res.json({
+//       status: "WA",
+//     });
+//   }
+// });
+app.post("/submission", auth, async (req, res) => {
+  const problemId = req.body.problemId;
+  const isCorrect = Math.random() < 0.5; // Randomly determine the correctness of the submission (for testing purposes)
+
+  try {
+    const problem = await Problem.findOne({ id: problemId });
+    if (!problem) {
+      return res.status(404).json({ error: "Problem not found" });
+    }
+
+    if (isCorrect) {
+      // Correct submission
+      const submission = {
+        id: problemId,
+        userId: req.userId,
+        status: "AC",
+      };
+      SUBMISSIONS.push(submission);
+      return res.json({ status: "AC" });
+    } else {
+      // Incorrect submission
+      const submission = {
+        id: problemId,
+        userId: req.userId,
+        status: "WA",
+      };
+      SUBMISSIONS.push(submission);
+      return res.json({ status: "WA" });
+    }
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
   }
 });
 
